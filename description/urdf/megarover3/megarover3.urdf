@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<robot name="megarover3">
+
+    <!-- base_footprint -->
+    <link name="base_footprint" />
+
+    <!-- base_link -->
+    <joint name="base_link_joint" type="fixed">
+        <parent link="base_footprint" />
+        <child link="base_link" />
+        <origin xyz="0 0 0.07" rpy="0 0 0" />
+    </joint>
+    <link name="base_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://description/meshes/megarover3/megarover3.stl"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0.2 0.2 0.2 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    <!-- lidar -->
+    <joint name="lidar_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="lidar"/>
+        <origin xyz="0 0 0.4432" rpy="0 0 1.57079632679" />
+    </joint>
+    <link name="lidar" />
+
+    <!-- velodyne (lidar front) -->
+    <joint name="velodyne_joint" type="fixed">
+        <parent link="lidar"/>
+        <child link="velodyne"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57079632679" />
+    </joint>
+    <link name="velodyne" />
+
+    <!-- camera left -->
+    <joint name="camera_left_joint" type="fixed">
+        <parent link="lidar"/>
+        <child link="camera_left"/>
+        <origin xyz="0.060949 -0.069430 -0.138706" rpy="-0.00224772 0.0252677 -1.5772" />
+    </joint>
+    <link name="camera_left" />
+
+    <!-- camera left optical -->
+    <joint name="camera_left_optical_joint" type="fixed">
+        <parent link="camera_left"/>
+        <child link="camera_left_optical"/>
+        <origin xyz="0 0 0" rpy="-1.57079632679 0 -1.57079632679" />
+    </joint>
+    <link name="camera_left_optical" />
+
+    <!-- camera right -->
+    <joint name="camera_right_joint" type="fixed">
+        <parent link="camera_left"/>
+        <child link="camera_right"/>
+        <origin xyz="0 -0.12 0" rpy="0 0 0" />
+    </joint>
+    <link name="camera_right" />
+
+    <!-- camera right optical -->
+    <joint name="camera_right_optical_joint" type="fixed">
+        <parent link="camera_right"/>
+        <child link="camera_right_optical"/>
+        <origin xyz="0 0 0" rpy="-1.57079632679 0 -1.57079632679" />
+    </joint>
+    <link name="camera_right_optical" />
+
+    <!-- imu -->
+    <joint name="imu_joint" type="fixed">
+        <parent link="camera_left"/>
+        <child link="imu"/>
+        <origin xyz="0 -0.023 0" rpy="0 0 0" />
+    </joint>
+    <link name="imu" />
+</robot>
