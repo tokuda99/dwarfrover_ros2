@@ -63,11 +63,11 @@ def launch_setup(context, *args, **kwarg):
     return [
         LogInfo(msg=log_message),
         Node(
-            package="joy",
-            executable="joy_node",
-            name="joy_node",
+            package="joy_linux",
+            executable="joy_linux_node",
+            name="joy_linux_node",
             output="screen",
-        ),  
+        ),
         Node(
             package="control",
             executable="joycon_node",
