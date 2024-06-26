@@ -4,7 +4,7 @@ using namespace std::chrono_literals;
 
 JoyCtrlMegarover::JoyCtrlMegarover(const rclcpp::NodeOptions &options)
     : Node("joycon", options),
-      last_published_time_(0.0),
+      last_published_time_(this->get_clock()->now()),
       connection_history_(2),
       updater_(this) {
     device_ = this->declare_parameter<std::string>("dev", "/dev/input/js0");
@@ -45,37 +45,36 @@ JoyCtrlMegarover::~JoyCtrlMegarover() {}
 void JoyCtrlMegarover::joyCallback(const sensor_msgs::msg::Joy::SharedPtr msg) {
     auto current_time = this->get_clock()->now();
     auto elapsed = (current_time - last_published_time_).seconds();
-    if (elapsed < 0.1) {
-        geometry_msgs::msg::Twist twist;
-        if (msg->buttons[forward_]) {
-            twist.angular.z = a_scale_ * msg->axes[angular_];
+    if (elapsed < 0.1) return;
+    geometry_msgs::msg::Twist twist;
+    if (msg->buttons[forward_]) {
+        twist.angular.z = a_scale_ * msg->axes[angular_];
 
-            double linear = (-msg->axes[linear_] + 1.0) / 2.0;
-            if (msg->axes[5] < 0.0 && linear > 0.25) {
-                linear = 0.25;
-            }
-            twist.linear.x = l_scale_ * linear;
-        } else if (msg->buttons[backward_]) {
-            twist.angular.z = a_scale_ * msg->axes[angular_];
-
-            double linear = (-msg->axes[linear_] + 1.0) / 2.0;
-            if (msg->axes[5] < 0.0 && linear > 0.25) {
-                linear = 0.25;
-            }
-            twist.linear.x = l_scale_ * -linear;
-        } else {
-            twist.angular.z = 0.0;
-            twist.linear.x = 0.0;
+        double linear = (-msg->axes[linear_] + 1.0) / 2.0;
+        if (msg->axes[5] < 0.0 && linear > 0.25) {
+            linear = 0.25;
         }
+        twist.linear.x = l_scale_ * linear;
+    } else if (msg->buttons[backward_]) {
+        twist.angular.z = a_scale_ * msg->axes[angular_];
 
-        if (isInit(msg->axes)) {
-            twist.angular.z = 0.0;
-            twist.linear.x = 0.0;
+        double linear = (-msg->axes[linear_] + 1.0) / 2.0;
+        if (msg->axes[5] < 0.0 && linear > 0.25) {
+            linear = 0.25;
         }
-
-        vel_pub_->publish(twist);
-        last_published_time_ = current_time;
+        twist.linear.x = l_scale_ * -linear;
+    } else {
+        twist.angular.z = 0.0;
+        twist.linear.x = 0.0;
     }
+
+    if (isInit(msg->axes)) {
+        twist.angular.z = 0.0;
+        twist.linear.x = 0.0;
+    }
+
+    vel_pub_->publish(twist);
+    last_published_time_ = current_time;
 }
 
 double JoyCtrlMegarover::round(double number, std::size_t n) {
@@ -127,7 +126,8 @@ void JoyCtrlMegarover::checkConnection(
 void JoyCtrlMegarover::checkConnectionHealth(
     diagnostic_updater::DiagnosticStatusWrapper &stat) {
     if (connection_history_[0]) {
-        auto elapsed = (this->get_clock()->now() - last_published_time_).seconds();
+        auto elapsed =
+            (this->get_clock()->now() - last_published_time_).seconds();
 
         if (elapsed < 60) {
             stat.summary(
