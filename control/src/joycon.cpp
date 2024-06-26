@@ -43,35 +43,39 @@ JoyCtrlMegarover::JoyCtrlMegarover(const rclcpp::NodeOptions &options)
 JoyCtrlMegarover::~JoyCtrlMegarover() {}
 
 void JoyCtrlMegarover::joyCallback(const sensor_msgs::msg::Joy::SharedPtr msg) {
-    geometry_msgs::msg::Twist twist;
-    if (msg->buttons[forward_]) {
-        twist.angular.z = a_scale_ * msg->axes[angular_];
+    auto current_time = this->get_clock()->now();
+    auto elapsed = (current_time - last_published_time_).seconds();
+    if (elapsed < 0.1) {
+        geometry_msgs::msg::Twist twist;
+        if (msg->buttons[forward_]) {
+            twist.angular.z = a_scale_ * msg->axes[angular_];
 
-        double linear = (-msg->axes[linear_] + 1.0) / 2.0;
-        if (msg->axes[5] < 0.0 && linear > 0.25) {
-            linear = 0.25;
+            double linear = (-msg->axes[linear_] + 1.0) / 2.0;
+            if (msg->axes[5] < 0.0 && linear > 0.25) {
+                linear = 0.25;
+            }
+            twist.linear.x = l_scale_ * linear;
+        } else if (msg->buttons[backward_]) {
+            twist.angular.z = a_scale_ * msg->axes[angular_];
+
+            double linear = (-msg->axes[linear_] + 1.0) / 2.0;
+            if (msg->axes[5] < 0.0 && linear > 0.25) {
+                linear = 0.25;
+            }
+            twist.linear.x = l_scale_ * -linear;
+        } else {
+            twist.angular.z = 0.0;
+            twist.linear.x = 0.0;
         }
-        twist.linear.x = l_scale_ * linear;
-    } else if (msg->buttons[backward_]) {
-        twist.angular.z = a_scale_ * msg->axes[angular_];
 
-        double linear = (-msg->axes[linear_] + 1.0) / 2.0;
-        if (msg->axes[5] < 0.0 && linear > 0.25) {
-            linear = 0.25;
+        if (isInit(msg->axes)) {
+            twist.angular.z = 0.0;
+            twist.linear.x = 0.0;
         }
-        twist.linear.x = l_scale_ * -linear;
-    } else {
-        twist.angular.z = 0.0;
-        twist.linear.x = 0.0;
-    }
 
-    if (isInit(msg->axes)) {
-        twist.angular.z = 0.0;
-        twist.linear.x = 0.0;
+        vel_pub_->publish(twist);
+        last_published_time_ = current_time;
     }
-
-    vel_pub_->publish(twist);
-    last_published_time_ = this->get_clock()->now();
 }
 
 double JoyCtrlMegarover::round(double number, std::size_t n) {
