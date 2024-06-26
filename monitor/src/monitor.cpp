@@ -41,9 +41,9 @@ void Megarover3Monitor::twistCallback(
 
     average_twist_ = (0.5 * twist) + (1.0 - 0.5) * average_twist_;
 
-    RCLCPP_INFO_STREAM(
-        this->get_logger(),
-        "Twist " << twist << " Average twist " << average_twist_);
+    // RCLCPP_INFO_STREAM(
+    //     this->get_logger(),
+    //     "Twist " << twist << " Average twist " << average_twist_);
 
     if (average_twist_ < 1e-12) {
         average_twist_ = 0.0;
@@ -85,9 +85,9 @@ void Megarover3Monitor::batteryCallback(
     else if (voltage_ < 21.0)
         percentage = "0";
 
-    RCLCPP_INFO_STREAM(
-        this->get_logger(),
-        "Battery voltage: " << voltage_ << "V, " << percentage << "%");
+    // RCLCPP_INFO_STREAM(
+    //     this->get_logger(),
+    //     "Battery voltage: " << voltage_ << "V, " << percentage << "%");
     last_published_time_ = this->get_clock()->now();
 }
 
