@@ -20,7 +20,7 @@ parameters = [
         "name": "model",
         "default": "mega3",
         "description": "model of rover",
-        "choices": "'dwarfrover', 'megarover3', 'mega3'",
+        "choices": "'dwarfrover', 'zestyrover', 'mega3'",
     },
     {
         "name": "controller",

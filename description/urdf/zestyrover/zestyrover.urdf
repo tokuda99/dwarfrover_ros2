@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="megarover3">
+<robot name="zestyrover">
 
     <!-- base_footprint -->
     <link name="base_footprint" />
@@ -14,7 +14,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="package://description/meshes/megarover3/megarover3.stl"/>
+                <mesh filename="package://description/meshes/zestyrover/zestyrover.stl"/>
             </geometry>
             <material name="black">
                 <color rgba="0.2 0.2 0.2 1.0"/>
