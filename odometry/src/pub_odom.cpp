@@ -47,6 +47,10 @@ public:
 private:
     void timer_callback()
     {
+        if (!odom_initialized)
+        {
+            return;
+        }
         auto msg = nav_msgs::msg::Odometry();
 
         // Convert tf2::Quaternion to geometry_msgs::msg::Quaternion
@@ -105,6 +109,7 @@ private:
         t.transform.rotation.w = q.w();
 
         last_time = current_time;
+        odom_initialized = true;
     }
 
     double vx = 0.0;
@@ -125,6 +130,8 @@ private:
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr publisher_;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr subscription_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+
+    bool odom_initialized = false;
 };
 
 int main(int argc, char *argv[])
