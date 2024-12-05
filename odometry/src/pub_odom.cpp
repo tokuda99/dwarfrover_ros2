@@ -14,7 +14,13 @@
 #include <nav_msgs/msg/odometry.hpp>
 #include "tf2_ros/transform_broadcaster.h"
 #include "tf2/LinearMath/Quaternion.h"
+
+#ifdef ROS_DISTRO_GALACTIC // ROS2 Galactic 以前は header の拡張子が .h
+#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#else
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#endif
+
 
 using std::placeholders::_1;
 using namespace std::chrono_literals;
